@@ -1,7 +1,9 @@
 package com.example.todo.controller
 
-import com.example.todo.entity.ToDo
+import com.example.todo.dto.ToDoRequest
+import com.example.todo.dto.ToDoResponse
 import com.example.todo.service.ToDoService
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
@@ -11,26 +13,26 @@ class ToDoController(private val service: ToDoService) {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun createTodo(@RequestBody todo: ToDo): ToDo {
-        return service.createTodo(todo)
+    fun createTodo(@Valid @RequestBody request: ToDoRequest): ToDoResponse {
+        return service.createTodo(request)
     }
 
     @GetMapping
-    fun getAllTodos(): List<ToDo> {
+    fun getAllTodos(): List<ToDoResponse> {
         return service.getAllTodos()
     }
 
     @GetMapping("/{id}")
-    fun getTodoById(@PathVariable id: Long): ToDo {
+    fun getTodoById(@PathVariable id: Long): ToDoResponse {
         return service.getTodoById(id)
     }
 
     @PutMapping("/{id}")
     fun updateTodo(
         @PathVariable id: Long,
-        @RequestBody todo: ToDo
-    ): ToDo {
-        return service.updateTodo(id, todo)
+        @Valid @RequestBody request: ToDoRequest
+    ): ToDoResponse {
+        return service.updateTodo(id, request)
     }
 
     @DeleteMapping("/{id}")

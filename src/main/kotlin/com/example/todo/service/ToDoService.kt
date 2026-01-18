@@ -1,5 +1,7 @@
 package com.example.todo.service
 
+import com.example.todo.dto.ToDoRequest
+import com.example.todo.dto.ToDoResponse
 import com.example.todo.entity.ToDo
 import com.example.todo.repository.ToDoRepository
 import org.springframework.stereotype.Service
@@ -8,30 +10,39 @@ import java.util.NoSuchElementException
 @Service
 class ToDoService(private val repository: ToDoRepository) {
 
-    fun createTodo(todo: ToDo): ToDo {
-        return repository.save(todo)
+    fun createTodo(request: ToDoRequest): ToDoResponse {
+        val todo = ToDo(
+            title = request.title,
+            description = request.description,
+            status = request.status ?: "PENDING"
+        )
+
+        val saved = repository.save(todo)
+        return toResponse(saved)
     }
 
-    fun getAllTodos(): List<ToDo> {
-        return repository.findAll()
+    fun getAllTodos(): List<ToDoResponse> {
+        return repository.findAll().map { toResponse(it) }
     }
 
-    fun getTodoById(id: Long): ToDo {
-        return repository.findById(id)
+    fun getTodoById(id: Long): ToDoResponse {
+        val todo = repository.findById(id)
             .orElseThrow { NoSuchElementException("ToDo not found with id: $id") }
+
+        return toResponse(todo)
     }
 
-    fun updateTodo(id: Long, updatedTodo: ToDo): ToDo {
+    fun updateTodo(id: Long, request: ToDoRequest): ToDoResponse {
         val existing = repository.findById(id)
             .orElseThrow { NoSuchElementException("ToDo not found with id: $id") }
 
-        val newTodo = existing.copy(
-            title = updatedTodo.title,
-            description = updatedTodo.description,
-            status = updatedTodo.status
+        val updated = existing.copy(
+            title = request.title,
+            description = request.description,
+            status = request.status ?: existing.status
         )
 
-        return repository.save(newTodo)
+        return toResponse(repository.save(updated))
     }
 
     fun deleteTodo(id: Long) {
@@ -40,4 +51,12 @@ class ToDoService(private val repository: ToDoRepository) {
         }
         repository.deleteById(id)
     }
+
+    private fun toResponse(todo: ToDo): ToDoResponse =
+        ToDoResponse(
+            id = todo.id,
+            title = todo.title,
+            description = todo.description,
+            status = todo.status
+        )
 }
