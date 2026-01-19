@@ -15,6 +15,7 @@ data class ToDo(
 
     val description: String? = null,
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var status: String = "PENDING"
+    var status: TaskStatus = TaskStatus.PENDING
 )

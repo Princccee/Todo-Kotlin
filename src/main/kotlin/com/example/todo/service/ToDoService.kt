@@ -2,14 +2,13 @@ package com.example.todo.service
 
 import com.example.todo.dto.ToDoRequest
 import com.example.todo.dto.ToDoResponse
+import com.example.todo.entity.TaskStatus
 import com.example.todo.entity.ToDo
 import com.example.todo.repository.ToDoRepository
-import org.springframework.stereotype.Service
-import java.util.NoSuchElementException
-
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
+import java.util.NoSuchElementException
 
 @Service
 class ToDoService(private val repository: ToDoRepository) {
@@ -18,7 +17,7 @@ class ToDoService(private val repository: ToDoRepository) {
         val todo = ToDo(
             title = request.title,
             description = request.description,
-            status = request.status ?: "PENDING"
+            status = request.status ?: TaskStatus.PENDING
         )
 
         val saved = repository.save(todo)
@@ -28,15 +27,15 @@ class ToDoService(private val repository: ToDoRepository) {
     fun getAllTodos(
         page: Int,
         size: Int,
-        status: String?
+        status: TaskStatus?
     ): Page<ToDoResponse> {
 
-        val pageable: Pageable = PageRequest.of(page, size)
+        val pageable = PageRequest.of(page, size)
 
-        val resultPage = if (status.isNullOrBlank()) {
+        val resultPage = if (status == null) {
             repository.findAll(pageable)
         } else {
-            repository.findByStatus(status.uppercase(), pageable)
+            repository.findByStatus(status, pageable)
         }
 
         return resultPage.map { toResponse(it) }
