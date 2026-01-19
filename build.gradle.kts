@@ -1,7 +1,7 @@
 plugins {
 	kotlin("jvm") version "2.2.21"
 	kotlin("plugin.spring") version "2.2.21"
-	id("org.springframework.boot") version "4.0.1"
+    id("org.springframework.boot") version "3.3.5"
 	id("io.spring.dependency-management") version "1.1.7"
 	kotlin("plugin.jpa") version "2.2.21"
 }
@@ -21,25 +21,27 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.springframework.boot:spring-boot-starter-webmvc")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("tools.jackson.module:jackson-module-kotlin")
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	runtimeOnly("org.postgresql:postgresql")
-	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.postgresql:postgresql")
+
+    // Jackson for Kotlin (fixes your error)
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+    // === SPRINGDOC (Swagger) for Spring Boot 3.3.x ===
     implementation(platform("org.springdoc:springdoc-openapi:2.6.0"))
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui")
 
+    // Required for Kotlin + Springdoc
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.mockk:mockk:1.13.8")
-    testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
+
 
 kotlin {
 	compilerOptions {
@@ -53,6 +55,7 @@ allOpen {
 	annotation("jakarta.persistence.Embeddable")
 }
 
-tasks.withType<Test> {
-	useJUnitPlatform()
+tasks.test {
+    useJUnitPlatform()
 }
+
