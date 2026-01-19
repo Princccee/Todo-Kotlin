@@ -7,6 +7,9 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
+import org.springframework.data.domain.Page
+import org.springframework.web.bind.annotation.RequestParam
+
 @RestController
 @RequestMapping("/api/todos")
 class ToDoController(private val service: ToDoService) {
@@ -18,8 +21,12 @@ class ToDoController(private val service: ToDoService) {
     }
 
     @GetMapping
-    fun getAllTodos(): List<ToDoResponse> {
-        return service.getAllTodos()
+    fun getAllTodos(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10") size: Int,
+        @RequestParam(required = false) status: String?
+    ): Page<ToDoResponse> {
+        return service.getAllTodos(page, size, status)
     }
 
     @GetMapping("/{id}")

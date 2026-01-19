@@ -5,4 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ToDoRepository : JpaRepository<ToDo, Long>
+interface ToDoRepository : JpaRepository<ToDo, Long>{
+    fun findByStatus(status: String, pageable: org.springframework.data.domain.Pageable)
+            : org.springframework.data.domain.Page<ToDo>
+}

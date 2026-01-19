@@ -7,6 +7,10 @@ import com.example.todo.repository.ToDoRepository
 import org.springframework.stereotype.Service
 import java.util.NoSuchElementException
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+
 @Service
 class ToDoService(private val repository: ToDoRepository) {
 
@@ -21,8 +25,21 @@ class ToDoService(private val repository: ToDoRepository) {
         return toResponse(saved)
     }
 
-    fun getAllTodos(): List<ToDoResponse> {
-        return repository.findAll().map { toResponse(it) }
+    fun getAllTodos(
+        page: Int,
+        size: Int,
+        status: String?
+    ): Page<ToDoResponse> {
+
+        val pageable: Pageable = PageRequest.of(page, size)
+
+        val resultPage = if (status.isNullOrBlank()) {
+            repository.findAll(pageable)
+        } else {
+            repository.findByStatus(status.uppercase(), pageable)
+        }
+
+        return resultPage.map { toResponse(it) }
     }
 
     fun getTodoById(id: Long): ToDoResponse {
